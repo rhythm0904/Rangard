@@ -74,44 +74,6 @@ File bytes → 14 features extracted:
 
 ---
 
-## 🗃️ Train on real data
-
-```bash
-# Demo model (works immediately):
-python scripts/train_model.py --mode demo
-
-# Real samples from MalwareBazaar (bazaar.abuse.ch):
-mkdir -p data/clean data/ransomware
-# Download samples → put in data/ransomware/
-# Copy clean files → put in data/clean/
-python scripts/train_model.py --mode real \
-  --clean-dir data/clean --ransom-dir data/ransomware
-# Accuracy: ~95-99%
-```
-
----
-
-## 🚢 Deploy
-
-Full guide: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
-
-- **Backend:** AWS EC2 free tier + Docker + Nginx + SSL
-- **Frontend:** Vercel (free, auto-deploys on push)
-- **Cost:** $0 year one
-
----
-
-## 🔑 Required accounts (all free)
-
-| Service | Purpose | Sign up |
-|---|---|---|
-| Infura | Ethereum blockchain | infura.io |
-| SendGrid | ThreatPulse emails | sendgrid.com |
-| AWS | Backend server | aws.amazon.com |
-| Vercel | Frontend hosting | vercel.com |
-
----
-
 ## 🤝 Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md). PRs welcome.
