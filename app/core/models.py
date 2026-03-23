@@ -165,4 +165,4 @@ class ThreatIntelligence(Base):
     occurrences     = Column(Integer, default=1, nullable=False)
     first_seen      = Column(DateTime(timezone=True), default=_now, nullable=False)
     last_seen       = Column(DateTime(timezone=True), default=_now, nullable=False)
-    metadata        = Column(JSON, nullable=True)
+    extra_extra_extra_extra_extra_extra_metadata        = Column(JSON, nullable=True)

@@ -8,12 +8,18 @@ import { persist } from 'zustand/middleware'
 export const useAuthStore = create(
   persist(
     (set) => ({
-      token: null,
-      user: null,
-      isAuthenticated: false,
+       token: localStorage.getItem("token") || null,
+user: null,
+isAuthenticated: !!localStorage.getItem("token"),
+setAuth: (token, user) => {
+  localStorage.setItem("token", token);
 
-      setAuth: (token, user) =>
-        set({ token, user, isAuthenticated: true }),
+  set({
+    token,
+    user,
+    isAuthenticated: true   // 🔥 ADD THIS (MAIN FIX)
+  });
+},
 
       setUser: (user) => set({ user }),
 

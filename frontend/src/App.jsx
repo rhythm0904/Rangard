@@ -1,38 +1,65 @@
 // src/App.jsx — RANGARD
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuthStore } from './store/authStore'
-import ParticleBackground from './components/ParticleBackground'
-import Navbar from './components/Navbar'
-import LandingPage    from './pages/LandingPage'
-import LoginPage      from './pages/LoginPage'
-import RegisterPage   from './pages/RegisterPage'
-import DashboardPage  from './pages/DashboardPage'
-import UploadPage     from './pages/UploadPage'
-import ReportsPage    from './pages/ReportsPage'
-import ScanDetailPage from './pages/ScanDetailPage'
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useAuthStore } from "./store/authStore";
 
-function ProtectedRoute({ children }) {
-  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
-  return isAuthenticated ? children : <Navigate to="/login" replace />
-}
+import Navbar from "./components/Navbar";
+import RegisterPage from "./pages/RegisterPage";
+import Dashboard from "./pages/DashboardPage";
+import UploadPage from "./pages/UploadPage";
+import Reports from "./pages/ReportsPage";
 
-export default function App() {
-  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuthStore();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/register" />;
+  }
+
+  return children;
+};
+
+function App() {
   return (
-    <div style={{ minHeight: '100vh', background: '#04060f' }}>
-      {isAuthenticated && <Navbar />}
-      <div style={{ position: 'relative', zIndex: 10 }}>
-        <Routes>
-          <Route path="/"          element={<LandingPage />} />
-          <Route path="/login"     element={<LoginPage />} />
-          <Route path="/register"  element={<RegisterPage />} />
-          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/upload"    element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
-          <Route path="/reports"   element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
-          <Route path="/scans/:id" element={<ProtectedRoute><ScanDetailPage /></ProtectedRoute>} />
-          <Route path="*"          element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </div>
-  )
+    <Router>
+      <Navbar />
+
+      <Routes>
+        {/* Default */}
+        <Route path="/" element={<Navigate to="/register" />} />
+
+        {/* Public */}
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* Protected */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/upload"
+          element={
+            <ProtectedRoute>
+              <UploadPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Reports />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }
+
+export default App;

@@ -10,7 +10,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 // Create axios instance with base URL
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: 'http://localhost:8000',
   timeout: 60000, // 60s — scans can take a while
 })
 
@@ -27,10 +27,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
-      useAuthStore.getState().logout()
-      window.location.href = '/login'
-    }
+   
     return Promise.reject(err)
   }
 )
