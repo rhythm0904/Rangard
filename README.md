@@ -21,7 +21,6 @@ RANGARD is an AI-powered ransomware detection platform. Upload any file — our 
 | 🔒 | **Instant Quarantine** | Fernet-encrypted isolation in milliseconds |
 | 📡 | **ThreatPulse** | Instant styled email alert via SendGrid on every threat |
 | 🎯 | **Live Scan Results** | Animated confidence ring, pattern list, blockchain TX |
-| 📊 | **Threat Reports** | Downloadable PDF reports, radar charts, full scan history |
 
 ---
 
