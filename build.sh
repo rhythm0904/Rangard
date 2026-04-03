@@ -3,7 +3,7 @@
 # Install backend dependencies
 cd rangard
 echo "📦 Installing Python dependencies..."
-pip install -q -r requirements.txt
+pip install  -r requirements.txt
 
 # Create database tables (optional - will run on first startup if needed)
 echo "🔧 Attempting database setup..."
