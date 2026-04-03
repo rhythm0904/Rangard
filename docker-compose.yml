@@ -1,0 +1,76 @@
+version: "3.9"
+
+# ────────────────────────────────────────────────────────────
+# docker-compose.yml
+#
+# Starts everything you need for local development:
+#   • PostgreSQL database
+#   • Redis (for Celery task queue)
+#   • The FastAPI backend (auto-reloads on code changes)
+#
+# HOW TO USE:
+#   1. Install Docker Desktop: https://www.docker.com/products/docker-desktop
+#   2. Copy .env.example to .env and fill in your values
+#   3. Run: docker-compose up
+#   4. API is at: http://localhost:8000
+#   5. API docs: http://localhost:8000/docs
+# ────────────────────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL database ──────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB:       rangard
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis (task queue) ────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── FastAPI backend ───────────────────────────────────────
+  api:
+    build: .
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app                            # mount source code for hot-reload
+      - quarantine:/tmp/rangard_quarantine
+    environment:
+      APP_ENV:           development
+      DATABASE_URL:      postgresql+asyncpg://postgres:password@db:5432/rangard
+      DATABASE_SYNC_URL: postgresql+psycopg2://postgres:password@db:5432/rangard
+      REDIS_URL:         redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  quarantine:

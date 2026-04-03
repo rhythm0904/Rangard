@@ -1,0 +1,99 @@
+name: CI / CD — RANGARD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-test:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: rangard_test
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - run: pip install -r requirements.txt pytest pytest-asyncio
+      - run: pytest tests/ -v --tb=short
+        env:
+          APP_ENV: test
+          SECRET_KEY: ci-test-secret-key
+          DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/rangard_test
+          DATABASE_SYNC_URL: postgresql+psycopg2://postgres:password@localhost:5432/rangard_test
+          REDIS_URL: redis://localhost:6379/0
+      - name: Syntax check
+        run: python -c "
+import ast,os,sys
+errs=[]
+for r,d,fs in os.walk('app'):
+  d[:]=[x for x in d if x!='__pycache__']
+  for f in fs:
+    if f.endswith('.py'):
+      p=os.path.join(r,f)
+      try: ast.parse(open(p).read())
+      except SyntaxError as e: errs.append(f'{p}: {e}')
+if errs: print('\n'.join(errs)); sys.exit(1)
+print('All Python files OK')
+"
+
+  frontend-build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20", cache: npm, cache-dependency-path: frontend/package.json }
+      - run: npm install
+      - run: npm run build
+        env:
+          VITE_API_URL: https://api.rangard.app
+
+  deploy-backend:
+    name: Deploy backend → EC2
+    needs: [backend-test, frontend-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key:      ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /opt/rangard
+            git pull origin main
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build api
+            echo "RANGARD deployed at $(date)"
+
+  deploy-frontend:
+    name: Deploy frontend → Vercel
+    needs: [backend-test, frontend-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token:      ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id:     ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: frontend
+          vercel-args: --prod
