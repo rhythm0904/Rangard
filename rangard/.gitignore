@@ -1,0 +1,67 @@
+# Secrets — NEVER commit
+.env
+*.env
+.env.*
+!.env.example
+!frontend/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+dist/
+build/
+*.egg-info/
+venv/
+.venv/
+env/
+
+# ML models
+app/ml/model/*.joblib
+app/ml/model/*.pkl
+!app/ml/model/.gitkeep
+
+# Quarantine — contains encrypted malware
+/tmp/rangard_quarantine/
+quarantine/
+*.quar
+
+# Database
+*.db
+*.sqlite3
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# Contracts
+contracts/node_modules/
+contracts/artifacts/
+contracts/cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Keys
+*.pem
+*.key
+*.crt
+
+# Training data
+data/clean/
+data/ransomware/
