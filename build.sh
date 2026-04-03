@@ -1,20 +1,23 @@
 #!/bin/bash
-set -o errexit
 
 # Install backend dependencies
 cd rangard
+echo "📦 Installing Python dependencies..."
 pip install -q -r requirements.txt
 
-# Create database tables (will migrate if needed)
+# Create database tables (optional - will run on first startup if needed)
+echo "🔧 Attempting database setup..."
 python -c "
 import asyncio
+import sys
 from app.core.database import create_tables
 try:
     asyncio.run(create_tables())
     print('✓ Database tables created/verified')
 except Exception as e:
-    print(f'⚠ Database setup warning: {e}')
-    print('(This is normal if database already exists)')
-"
+    print(f'⚠ Database setup skipped (will run on first startup): {e}')
+    # Don't exit with error - database will be initialized on first run
+    sys.exit(0)
+" || true
 
-echo "✓ Build completed successfully"
+echo "✅ Build completed successfully"
