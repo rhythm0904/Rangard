@@ -4,11 +4,11 @@ uvicorn[standard]==0.29.0
 python-multipart==0.0.9        # file uploads
 
 # ── Database ───────────────────────────────────────────────
-sqlalchemy==2.0.30
+sqlalchemy==1.4.46
 alembic==1.13.1                # DB migrations
 asyncpg==0.29.0                # async postgres driver
 psycopg2-binary==2.9.9         # sync fallback / alembic
-sqlalchemy==2.0.23
+sqlalchemy==1.4.46
 uvicorn==0.24.0
 fastapi==0.104.1
 python-dotenv==1.0.0
