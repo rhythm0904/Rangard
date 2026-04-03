@@ -1,5 +1,7 @@
 #!/bin/bash
 
+apt-get install -y libmagic1 || true
+pip install -r requirements.txt
 # Install backend dependencies
 cd rangard
 echo "📦 Installing Python dependencies..."
