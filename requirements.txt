@@ -8,16 +8,15 @@ sqlalchemy==1.4.46
 alembic==1.13.1                # DB migrations
 asyncpg==0.29.0                # async postgres driver
 psycopg2-binary==2.9.9         # sync fallback / alembic
-sqlalchemy==1.4.46
-uvicorn==0.24.0
-fastapi==0.104.1
-python-dotenv==1.0.0
-pydantic==2.5.0
+
+# ── Configuration ──────────────────────────────────────────
+python-dotenv==1.0.1
+pydantic==2.7.1
+pydantic-settings==2.2.1
 
 # ── Authentication ─────────────────────────────────────────
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-dotenv==1.0.1
 
 # ── Machine Learning ───────────────────────────────────────
 scikit-learn==1.4.2
@@ -46,8 +45,6 @@ redis==5.0.4
 celery==5.4.0                  # background tasks
 
 # ── Utilities ──────────────────────────────────────────────
-pydantic==2.7.1
-pydantic-settings==2.2.1
 cryptography==42.0.7
 aiofiles==23.2.1
 python-dateutil==2.9.0
