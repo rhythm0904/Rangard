@@ -30,7 +30,7 @@ web3==6.19.0
 # ── File Analysis ──────────────────────────────────────────
 python-magic==0.4.27           # MIME type detection
 pefile==2023.2.7               # PE file parsing (Windows executables)
-yara-python==4.5.1             # signature matching
+yara-python==4.3.1             # signature matching
 
 # ── Email Notifications ────────────────────────────────────
 sendgrid==6.11.0
